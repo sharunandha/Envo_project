@@ -1,0 +1,35 @@
+# Render Blueprint — deploys both backend and frontend from one repo
+# https://render.com/docs/blueprint-spec
+
+services:
+  # ── Backend (Node.js Web Service) ──
+  - type: web
+    name: envo-backend
+    runtime: node
+    region: singapore  # Closest to India
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+    plan: free
+
+  # ── Frontend (Static Site) ──
+  - type: web
+    name: envo-frontend
+    runtime: static
+    region: singapore
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: build
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=3600
+    envVars:
+      - key: REACT_APP_API_URL
+        value: https://envo-backend.onrender.com/api
+    plan: free

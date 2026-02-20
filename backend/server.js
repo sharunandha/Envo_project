@@ -8,14 +8,18 @@ const riskRoutes = require('./routes/riskRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware — allow any localhost port for development
+// Middleware — allow localhost (dev) + Render frontend (prod)
 app.use(cors({
   origin: function (origin, callback) {
-    if (!origin || /^https?:\/\/localhost(:\d+)?$/.test(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    // Localhost for development
+    if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
+    // Render.com deployed frontend
+    if (/\.onrender\.com$/.test(origin)) return callback(null, true);
+    // Custom domain (set FRONTEND_URL env var if using a custom domain)
+    if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
