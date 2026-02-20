@@ -21,7 +21,6 @@ services:
   - type: web
     name: envo-frontend
     runtime: static
-    region: singapore
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: build
