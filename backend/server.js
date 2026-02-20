@@ -8,15 +8,15 @@ const riskRoutes = require('./routes/riskRoutes');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Middleware — allow localhost (dev) + Render frontend (prod)
+// Middleware — allow localhost (dev) + Railway/production frontend
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
     // Localhost for development
     if (/^https?:\/\/localhost(:\d+)?$/.test(origin)) return callback(null, true);
-    // Render.com deployed frontend
-    if (/\.onrender\.com$/.test(origin)) return callback(null, true);
+    // Railway deployed frontend
+    if (/\.up\.railway\.app$/.test(origin)) return callback(null, true);
     // Custom domain (set FRONTEND_URL env var if using a custom domain)
     if (process.env.FRONTEND_URL && origin === process.env.FRONTEND_URL) return callback(null, true);
     callback(new Error('Not allowed by CORS'));
@@ -71,7 +71,7 @@ app.use((req, res) => {
 
 const { damLocations } = require('./utils/damLocations');
 
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📡 Mode: LIVE DATA (all values from real APIs)`);
   console.log(`🏗️  Monitoring ${damLocations.length} dams across India`);
