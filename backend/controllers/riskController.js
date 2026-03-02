@@ -157,6 +157,13 @@ class RiskController {
           earthquakes: {
             recentCount: eqCount,
             maxMagnitude: maxEqMag,
+            events: (quakes.earthquakes || []).slice(0, 10).map(eq => ({
+              magnitude: eq.magnitude,
+              place: eq.place,
+              time: eq.time,
+              depth: eq.depth,
+              distance: eq.distance,
+            })),
           },
           reservoir: {
             level: reservoirLevel,

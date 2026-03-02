@@ -138,6 +138,34 @@ export const RiskDetailsPanel = ({ riskData, dam }) => {
                 </>
               )}
             </div>
+
+            {/* Earthquake Event Details */}
+            {riskData.environmentalData.earthquakes?.events?.length > 0 && (
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                <p className="text-xs font-semibold text-gray-700 mb-2">📍 Recent Earthquake Events:</p>
+                <div className="space-y-2 max-h-40 overflow-y-auto">
+                  {riskData.environmentalData.earthquakes.events.map((eq, idx) => {
+                    const eqDate = new Date(eq.time);
+                    const istStr = eqDate.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true });
+                    return (
+                      <div key={idx} className="bg-gray-50 rounded-lg p-2 border border-gray-100 text-xs">
+                        <div className="flex items-center justify-between">
+                          <span className={`font-bold ${eq.magnitude >= 4.5 ? 'text-red-600' : eq.magnitude >= 3.5 ? 'text-amber-600' : 'text-gray-700'}`}>
+                            M{eq.magnitude?.toFixed(1)}
+                          </span>
+                          <span className="text-gray-500">{istStr} IST</span>
+                        </div>
+                        <p className="text-gray-600 mt-0.5">📌 {eq.place || 'Unknown location'}</p>
+                        <div className="flex gap-3 mt-0.5 text-gray-400">
+                          <span>Depth: {eq.depth?.toFixed(1)} km</span>
+                          <span>Distance: {eq.distance?.toFixed(0)} km</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -153,7 +181,10 @@ export const RiskDetailsPanel = ({ riskData, dam }) => {
 };
 
 export const AlertsPanel = ({ alerts, onRefresh }) => {
-  if (!alerts || alerts.length === 0) {
+  // Filter out INFO/LOW severity alerts - only show HIGH and MEDIUM
+  const actionableAlerts = (alerts || []).filter(a => a.severity === 'HIGH' || a.severity === 'MEDIUM');
+
+  if (!actionableAlerts || actionableAlerts.length === 0) {
     return (
       <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
         <p className="text-gray-700">✓ No active alerts</p>
@@ -164,23 +195,21 @@ export const AlertsPanel = ({ alerts, onRefresh }) => {
 
   return (
     <div className="space-y-2">
-      {alerts.map(alert => (
+      {actionableAlerts.map(alert => (
         <div
           key={alert.id}
           className={`p-3 rounded-lg border-l-4 ${
             alert.severity === 'HIGH'
               ? 'bg-red-50 border-red-500'
-              : alert.severity === 'MEDIUM'
-              ? 'bg-amber-50 border-amber-500'
-              : 'bg-blue-50 border-blue-500'
+              : 'bg-amber-50 border-amber-500'
           }`}
         >
           <div className="flex items-start justify-between">
             <div className="flex-1">
-              <p className={`font-bold text-sm ${alert.severity === 'HIGH' ? 'text-red-800' : alert.severity === 'MEDIUM' ? 'text-amber-800' : 'text-blue-800'}`}>
+              <p className={`font-bold text-sm ${alert.severity === 'HIGH' ? 'text-red-800' : 'text-amber-800'}`}>
                 {alert.type}
               </p>
-              <p className={`text-xs mt-1 ${alert.severity === 'HIGH' ? 'text-red-700' : alert.severity === 'MEDIUM' ? 'text-amber-700' : 'text-blue-700'}`}>
+              <p className={`text-xs mt-1 ${alert.severity === 'HIGH' ? 'text-red-700' : 'text-amber-700'}`}>
                 {alert.message}
               </p>
               <p className="text-xs text-gray-600 mt-2">
@@ -188,7 +217,7 @@ export const AlertsPanel = ({ alerts, onRefresh }) => {
               </p>
             </div>
             <span className="text-lg ml-2">
-              {alert.severity === 'HIGH' ? '🚨' : alert.severity === 'MEDIUM' ? '⚠️' : 'ℹ️'}
+              {alert.severity === 'HIGH' ? '🚨' : '⚠️'}
             </span>
           </div>
         </div>

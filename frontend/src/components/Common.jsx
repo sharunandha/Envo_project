@@ -54,14 +54,14 @@ export const InfoCard = ({ icon, title, value, unit, trend, color = 'blue' }) =>
     <div className={`bg-gradient-to-br ${colors[color]} rounded-lg p-3 md:p-6 shadow-md text-white border border-opacity-20 border-white hover:shadow-lg transition`}>
       <div className="flex justify-between items-start">
         <div className="min-w-0 flex-1">
-          <p className="text-xs md:text-sm font-medium opacity-90 truncate">{title}</p>
+          <p className="text-xs md:text-sm font-medium text-white truncate">{title}</p>
           <p className="text-xl md:text-3xl font-bold mt-1 md:mt-2">{value}</p>
-          {unit && <p className="text-xs opacity-75 mt-1">{unit}</p>}
+          {unit && <p className="text-xs text-white mt-1">{unit}</p>}
         </div>
         <span className="text-2xl md:text-3xl ml-2 flex-shrink-0">{icon}</span>
       </div>
       {trend && (
-        <p className="text-xs mt-3 opacity-90">
+        <p className="text-xs mt-3 text-white">
           Trend: <span className="font-semibold">{trend}</span>
         </p>
       )}

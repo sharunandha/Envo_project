@@ -32,7 +32,7 @@ export const Header = ({ lastUpdated, onRefresh, isLoading, currentView, onViewC
             <h1 className="text-lg md:text-2xl font-bold text-gray-900 leading-tight">
               India Flood & Landslide Warning System
             </h1>
-            <p className="text-xs md:text-sm text-gray-600 mt-0.5">
+            <p className="text-xs md:text-sm text-gray-700 mt-0.5">
               Real-time Environmental Monitoring Dashboard
             </p>
           </div>
@@ -197,7 +197,7 @@ export const Drawer = ({ isOpen, onClose, regions, selectedRegion, onRegionChang
                         }`}
                       >
                         <div className="font-medium text-xs">{dam.name}</div>
-                        {dam.river && <div className="text-xs opacity-60">{dam.river}</div>}
+                        {dam.river && <div className="text-xs text-gray-500">{dam.river}</div>}
                       </button>
                     ))}
                   </div>
@@ -218,10 +218,10 @@ export const Footer = () => {
     <div className="bg-gray-50 border-t border-gray-200 p-3 md:p-4 text-center text-xs text-gray-600">
       <p className="flex flex-wrap items-center justify-center gap-1 md:gap-2">
         <span className="inline-block w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-        <span className="font-medium">100% Live Data</span>
-        <span className="hidden sm:inline">— Open-Meteo Weather API &bull; GloFAS River Discharge &bull; NASA POWER Satellite &bull; USGS Earthquake Hazards</span>
+        <span className="font-medium text-gray-800">100% Live Data</span>
+        <span className="hidden sm:inline text-gray-700">— Open-Meteo Weather API &bull; GloFAS River Discharge &bull; NASA POWER Satellite &bull; USGS Earthquake Hazards</span>
       </p>
-      <p className="mt-2">
+      <p className="mt-2 text-gray-700">
         Last sync: {new Date().toLocaleString('en-IN')} &bull; No mock or random values
       </p>
     </div>

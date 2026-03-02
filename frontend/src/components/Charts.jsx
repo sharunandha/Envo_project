@@ -25,27 +25,59 @@ ChartJS.register(
   Filler
 );
 
-export const RainfallChart = ({ data, label = 'Rainfall (mm)' }) => {
-  if (!data || !data.daily) {
+export const RainfallChart = ({ data, damName }) => {
+  // data = { forecast: {daily: {...}}, historical: {daily: {...}} }
+  const forecast = data?.forecast?.daily || data?.daily || null;
+  const historical = data?.historical?.daily || null;
+
+  if (!forecast && !historical) {
     return <div className="text-gray-500 text-center py-8">No rainfall data available</div>;
   }
 
-  const chartData = {
-    labels: data.daily.time || [],
-    datasets: [
-      {
-        label,
-        data: data.daily.precipitation_sum || [],
-        borderColor: '#3b82f6',
-        backgroundColor: 'rgba(59, 130, 246, 0.15)',
-        fill: true,
-        tension: 0.4,
-        pointBackgroundColor: '#3b82f6',
-        pointBorderColor: '#fff',
-        pointBorderWidth: 2,
-      },
-    ],
-  };
+  // Build combined labels and datasets
+  const histLabels = historical?.time || [];
+  const forecastLabels = forecast?.time || [];
+  const allLabels = [...histLabels, ...forecastLabels.filter(d => !histLabels.includes(d))];
+
+  const histMap = {};
+  histLabels.forEach((d, i) => { histMap[d] = historical.precipitation_sum?.[i] || 0; });
+  const forecastMap = {};
+  forecastLabels.forEach((d, i) => { forecastMap[d] = forecast.precipitation_sum?.[i] || 0; });
+
+  const datasets = [];
+
+  if (historical) {
+    datasets.push({
+      label: 'Historical (observed)',
+      data: allLabels.map(d => histMap[d] ?? null),
+      borderColor: '#8b5cf6',
+      backgroundColor: 'rgba(139, 92, 246, 0.2)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#8b5cf6',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      spanGaps: true,
+    });
+  }
+
+  if (forecast) {
+    datasets.push({
+      label: 'Forecast (predicted)',
+      data: allLabels.map(d => forecastMap[d] ?? null),
+      borderColor: '#3b82f6',
+      backgroundColor: 'rgba(59, 130, 246, 0.15)',
+      fill: true,
+      tension: 0.4,
+      pointBackgroundColor: '#3b82f6',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      borderDash: [5, 3],
+      spanGaps: true,
+    });
+  }
+
+  const chartData = { labels: allLabels, datasets };
 
   const options = {
     responsive: true,
@@ -59,7 +91,7 @@ export const RainfallChart = ({ data, label = 'Rainfall (mm)' }) => {
       },
       title: {
         display: true,
-        text: 'Live Rainfall Forecast (Open-Meteo)',
+        text: damName ? `Rainfall — ${damName} (Live Open-Meteo)` : 'Rainfall (Live Open-Meteo)',
         color: '#6b7280',
         font: { size: 11, weight: 'normal' },
       },
@@ -71,7 +103,7 @@ export const RainfallChart = ({ data, label = 'Rainfall (mm)' }) => {
         title: { display: true, text: 'mm', color: '#9ca3af' },
       },
       x: {
-        ticks: { color: '#6b7280' },
+        ticks: { color: '#6b7280', maxRotation: 45 },
         grid: { color: '#e5e7eb' },
       },
     },

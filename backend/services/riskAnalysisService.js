@@ -171,25 +171,6 @@ class RiskAnalysisService {
       });
     }
 
-    // ── INFO severity alerts — situational awareness ──
-    // Generated for LOW-risk dams that still have noteworthy conditions
-    if (floodRisk.level === 'LOW' && floodRisk.score >= 8) {
-      alerts.push({
-        id: `flood-info-${slug}`, type: 'FLOOD', severity: 'INFO',
-        location: damName, score: floodRisk.score,
-        message: `Flood conditions normal at ${damName}. ${floodRisk.factors.slice(0, 2).join('; ')}`,
-        timestamp: ts,
-      });
-    }
-    if (landslideRisk.level === 'LOW' && landslideRisk.score >= 10) {
-      alerts.push({
-        id: `ls-info-${slug}`, type: 'LANDSLIDE', severity: 'INFO',
-        location: damName, score: landslideRisk.score,
-        message: `Landslide conditions monitored near ${damName}. ${landslideRisk.factors.slice(0, 2).join('; ')}`,
-        timestamp: ts,
-      });
-    }
-
     return alerts;
   }
 
